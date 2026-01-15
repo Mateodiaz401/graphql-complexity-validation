@@ -1,0 +1,26 @@
+{
+  "license": "MIT",
+  "name": "graphql-safe-complexity",
+  "version": "0.1.0",
+  "description": "A lightweight GraphQL validation rule to safely limit query complexity before execution.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "author": "Mateo diaz lopez <mateodiaz401@gmail.com>",
+  "peerDependencies": {
+    "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}
