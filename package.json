@@ -1,6 +1,6 @@
 {
   "license": "MIT",
-  "name": "graphql-validation-complexity",
+  "name": "graphql-complexity-validation",
   "version": "1.0.0",
   "description": "GraphQL validation rule to limit query complexity",
   "main": "dist/index.js",

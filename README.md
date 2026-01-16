@@ -1,5 +1,9 @@
 # graphql-validation-complexity
 
+![CI](https://github.com/Mateodiaz401/graphql-complexity-validation/actions/workflows/ci.yml/badge.svg)
+![npm](https://img.shields.io/npm/v/graphql-complexity-validation)
+![license](https://img.shields.io/npm/l/graphql-complexity-validation)
+
 A lightweight, framework-agnostic GraphQL validation rule to limit query complexity and protect your server from expensive queries.
 
 ✅ Zero dependencies
@@ -13,13 +17,13 @@ A lightweight, framework-agnostic GraphQL validation rule to limit query complex
 ## Installation
 
 ```bash
-npm install graphql-validation-complexity
+npm install graphql-complexity-validation
 ```
 
 or
 
 ```bash
-yarn add graphql-validation-complexity
+yarn add graphql-complexity-validation
 ```
 
 ---
@@ -28,7 +32,7 @@ yarn add graphql-validation-complexity
 
 ```ts
 import { validate, parse } from "graphql";
-import { createComplexityLimitRule } from "graphql-validation-complexity";
+import { createComplexityLimitRule } from "graphql-complexity-validation";
 
 const errors = validate(schema, parse(query), [
   createComplexityLimitRule({
@@ -120,7 +124,7 @@ createComplexityLimitRule({
 
 ```ts
 import { ApolloServer } from "@apollo/server";
-import { createComplexityLimitRule } from "graphql-validation-complexity";
+import { createComplexityLimitRule } from "graphql-complexity-validation";
 
 const server = new ApolloServer({
   schema,
@@ -138,7 +142,7 @@ const server = new ApolloServer({
 
 ```ts
 import { createYoga } from "graphql-yoga";
-import { createComplexityLimitRule } from "graphql-validation-complexity";
+import { createComplexityLimitRule } from "graphql-complexity-validation";
 
 const yoga = createYoga({
   schema,
@@ -156,7 +160,7 @@ const yoga = createYoga({
 
 ```ts
 import { envelop, useValidationRules } from "@envelop/core";
-import { createComplexityLimitRule } from "graphql-complexity-limit";
+import { createComplexityLimitRule } from "graphql-complexity-validation";
 
 const getEnveloped = envelop({
   plugins: [
@@ -175,7 +179,7 @@ const getEnveloped = envelop({
 
 ```ts
 import { GraphQLModule } from "@nestjs/graphql";
-import { createComplexityLimitRule } from "graphql-complexity-limit";
+import { createComplexityLimitRule } from "graphql-complexity-validation";
 
 GraphQLModule.forRoot({
   schema,
