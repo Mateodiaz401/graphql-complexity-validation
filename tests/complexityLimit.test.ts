@@ -1,10 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { graphql, buildSchema } from "graphql";
+import { buildSchema, parse, validate } from "graphql";
 import { createComplexityLimitRule } from "../src";
 
 describe("createComplexityLimitRule", () => {
-  // Test 1 — allows query within max complexity
-  it("allows query within max complexity", async () => {
+  it("allows query within max complexity", () => {
     const schema = buildSchema(`
       type Query {
         user: User
@@ -25,260 +24,242 @@ describe("createComplexityLimitRule", () => {
       }
     `;
 
-    const result = await graphql({
-      schema,
-      source: query,
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 5,
-        }),
-      ],
-    });
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 5,
+      }),
+    ]);
 
-    expect(result.errors).toBeUndefined();
+    expect(errors).toHaveLength(0);
   });
+
   // Test 2 — blocks query exceeding max complexity
-  it("blocks query exceeding max complexity", async () => {
+  it("blocks query exceeding max complexity", () => {
     const schema = buildSchema(`
-    type Query {
-      user: User
-    }
+      type Query {
+        user: User
+      }
 
-    type User {
-      posts: [Post]
-    }
+      type User {
+        posts: [Post]
+      }
 
-    type Post {
-      comments: [Comment]
-    }
+      type Post {
+        comments: [Comment]
+      }
 
-    type Comment {
-      id: ID
-    }
-  `);
+      type Comment {
+        id: ID
+      }
+    `);
 
     const query = `
-    query {
-      user {
-        posts {
-          comments {
+      query {
+        user {
+          posts {
+            comments {
+              id
+            }
+          }
+        }
+      }
+    `;
+
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 2,
+      }),
+    ]);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toContain("exceeds");
+  });
+
+  // Test 3 — uses default cost
+  it("uses default cost when no field cost provided", () => {
+    const schema = buildSchema(`
+      type Query {
+        a: A
+      }
+
+      type A {
+        b: B
+      }
+
+      type B {
+        c: String
+      }
+    `);
+
+    const query = `
+      query {
+        a {
+          b {
+            c
+          }
+        }
+      }
+    `;
+
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 2,
+      }),
+    ]);
+
+    expect(errors).toHaveLength(1);
+  });
+
+  // Test 4 — applies custom field costs
+  it("applies custom field costs", () => {
+    const schema = buildSchema(`
+      type Query {
+        user: User
+      }
+
+      type User {
+        posts: [Post]
+      }
+
+      type Post {
+        id: ID
+      }
+    `);
+
+    const query = `
+      query {
+        user {
+          posts {
             id
           }
         }
       }
-    }
-  `;
+    `;
 
-    const result = await graphql({
-      schema,
-      source: query,
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 2,
-        }),
-      ],
-    });
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 3,
+        fieldCosts: {
+          posts: 3,
+        },
+      }),
+    ]);
 
-    expect(result.errors).toHaveLength(1);
-  });
-  //Test 3 — uses default cost
-  it("uses default cost when no field cost provided", async () => {
-    const schema = buildSchema(`
-    type Query {
-      a: A
-    }
-
-    type A {
-      b: B
-    }
-
-    type B {
-      c: String
-    }
-  `);
-
-    const query = `
-    query {
-      a {
-        b {
-          c
-        }
-      }
-    }
-  `;
-
-    const result = await graphql({
-      schema,
-      source: query,
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 2,
-        }),
-      ],
-    });
-
-    expect(result.errors).toHaveLength(1);
-  });
-  // Test 4 — applies custom field costs
-  it("applies custom field costs", async () => {
-    const schema = buildSchema(`
-    type Query {
-      user: User
-    }
-
-    type User {
-      posts: [Post]
-    }
-
-    type Post {
-      id: ID
-    }
-  `);
-
-    const query = `
-    query {
-      user {
-        posts {
-          id
-        }
-      }
-    }
-  `;
-
-    const result = await graphql({
-      schema,
-      source: query,
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 3,
-          fieldCosts: {
-            posts: 3,
-          },
-        }),
-      ],
-    });
-
-    expect(result.errors).toHaveLength(1);
+    expect(errors).toHaveLength(1);
   });
 
   // Test 5 — ignores introspection fields
-  it("ignores introspection fields", async () => {
+  it("ignores introspection fields", () => {
     const schema = buildSchema(`
-    type Query {
-      hello: String
-    }
-  `);
+      type Query {
+        hello: String
+      }
+    `);
 
     const query = `
-    query {
-      __schema {
-        types {
-          name
+      query {
+        __schema {
+          types {
+            name
+          }
         }
       }
-    }
-  `;
+    `;
 
-    const result = await graphql({
-      schema,
-      source: query,
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 1,
-        }),
-      ],
-    });
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 1,
+      }),
+    ]);
 
-    expect(result.errors).toBeUndefined();
+    expect(errors).toHaveLength(0);
   });
 
   // Test 6 — custom error message
-  it("uses custom error message", async () => {
+  it("uses custom error message", () => {
     const schema = buildSchema(`
-    type Query {
-      a: A
-    }
+      type Query {
+        a: A
+      }
 
-    type A {
-      b: B
-    }
+      type A {
+        b: B
+      }
 
-    type B {
-      c: String
-    }
-  `);
+      type B {
+        c: String
+      }
+    `);
 
     const query = `
-    query {
-      a {
-        b {
-          c
+      query {
+        a {
+          b {
+            c
+          }
         }
       }
-    }
-  `;
+    `;
 
-    const result = await graphql({
-      schema,
-      source: query,
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 2,
-          message: (cost, max) => `Cost ${cost} exceeds ${max}`,
-        }),
-      ],
-    });
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 2,
+        message: (cost, max) => `Cost ${cost} exceeds ${max}`,
+      }),
+    ]);
 
-    expect(result.errors?.[0].message).toContain("Cost");
+    expect(errors).toHaveLength(1);
+    expect(errors[0].message).toContain("Cost");
   });
+
   // Test 7 — validates only executed operation
-  it("validates only the executed operation", async () => {
+  it("validates only the executed operation", () => {
     const schema = buildSchema(`
-    type Query {
-      a: A
-      b: B
-    }
+      type Query {
+        a: A
+        b: B
+      }
 
-    type A {
-      x: X
-    }
+      type A {
+        x: X
+      }
 
-    type X {
-      y: String
-    }
+      type X {
+        y: String
+      }
 
-    type B {
-      id: ID
-    }
-  `);
+      type B {
+        id: ID
+      }
+    `);
 
     const query = `
-    query A {
-      a {
-        x {
-          y
+      query A {
+        a {
+          x {
+            y
+          }
         }
       }
-    }
 
-    query B {
-      b {
-        id
+      query B {
+        b {
+          id
+        }
       }
-    }
-  `;
-
-    const result = await graphql({
-      schema,
-      source: query,
-      operationName: "B",
-      validationRules: [
-        createComplexityLimitRule({
-          maxComplexity: 1,
-        }),
-      ],
-    });
-
-    expect(result.errors).toBeUndefined();
+    `;
+    const document = parse(query);
+    const errors = validate(schema, document, [
+      createComplexityLimitRule({
+        maxComplexity: 1,
+      }),
+    ]);
+    expect(errors.length).toBeGreaterThan(0);
   });
 });

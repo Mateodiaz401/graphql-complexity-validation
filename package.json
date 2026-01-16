@@ -1,8 +1,8 @@
 {
   "license": "MIT",
-  "name": "graphql-safe-complexity",
-  "version": "0.1.0",
-  "description": "A lightweight GraphQL validation rule to safely limit query complexity before execution.",
+  "name": "graphql-validation-complexity",
+  "version": "1.0.0",
+  "description": "GraphQL validation rule to limit query complexity",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build"
   },
   "author": "Mateo diaz lopez <mateodiaz401@gmail.com>",
   "peerDependencies": {
@@ -19,8 +19,31 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "tsup": "^8.0.0",
+    "@vitest/coverage-v8": "^4.0.17",
     "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "vitest": "^4.0.17"
+  },
+  "keywords": [
+    "graphql",
+    "complexity",
+    "validation",
+    "security",
+    "apollo",
+    "nest",
+    "yoga"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mateodiaz401/graphql-validation-complexity.git"
+  },
+  "homepage": "https://github.com/Mateodiaz401/graphql-validation-complexity",
+  "bugs": {
+    "url": "https://github.com/Mateodiaz401/graphql-validation-complexity/issues"
   }
 }
