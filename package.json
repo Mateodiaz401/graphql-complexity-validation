@@ -41,10 +41,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Mateodiaz401/graphql-validation-complexity.git"
+    "url": "https://github.com/Mateodiaz401/graphql-complexity-validation.git"
   },
-  "homepage": "https://github.com/Mateodiaz401/graphql-validation-complexity",
+  "homepage": "https://github.com/Mateodiaz401/graphql-complexity-validation",
   "bugs": {
-    "url": "https://github.com/Mateodiaz401/graphql-validation-complexity/issues"
+    "url": "https://github.com/Mateodiaz401/graphql-complexity-validation/issues"
   }
 }
