@@ -1,8 +1,10 @@
-# graphql-validation-complexity
+# graphql-complexity-validation
 
 ![CI](https://github.com/Mateodiaz401/graphql-complexity-validation/actions/workflows/ci.yml/badge.svg)
 ![npm](https://img.shields.io/npm/v/graphql-complexity-validation)
+![downloads](https://img.shields.io/npm/dm/graphql-complexity-validation)
 ![license](https://img.shields.io/npm/l/graphql-complexity-validation)
+![typescript](https://img.shields.io/badge/TypeScript-Ready-blue)
 
 A lightweight, framework-agnostic GraphQL validation rule to limit query complexity and protect your server from expensive queries.
 
@@ -11,6 +13,11 @@ A lightweight, framework-agnostic GraphQL validation rule to limit query complex
 ✅ Works with Apollo Server, GraphQL Yoga, Envelop, NestJS
 ✅ Supports fragments, inline fragments, and introspection
 ✅ Fully typed (TypeScript)
+
+## Requirements
+
+- Node.js >= 14
+- `graphql` ^14 | ^15 | ^16
 
 ---
 
@@ -52,6 +59,8 @@ If the query exceeds the configured complexity, a validation error is returned.
 - Nested fields add their cost recursively
 - Fragments and inline fragments are fully supported
 - Introspection fields (`__schema`, `__type`, etc.) are ignored by default
+- Complexity is calculated per operation during GraphQL's validation phase.
+- If a document contains multiple operations, each operation is validated independently.
 
 Example:
 
@@ -202,6 +211,17 @@ GraphQLModule.forRoot({
 - Predictable and easy to reason about
 
 Designed for **performance**, **clarity**, and **portability**.
+
+---
+
+## Comparison
+
+Unlike other GraphQL complexity libraries, this package:
+
+- Does not require schema traversal
+- Does not rely on directives
+- Does not depend on Apollo internals
+- Works entirely at the **GraphQL validation layer**
 
 ---
 
